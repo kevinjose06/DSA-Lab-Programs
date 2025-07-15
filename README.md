@@ -1,5 +1,5 @@
 # DSA-Lab-Programs
-# This repository includes all the DSA programs that were done in the lab for KTU 2024 Scheme.The list of questions are given below.
+This repository includes all the DSA programs that were done in the lab for KTU 2024 Scheme.The list of questions are given below.
 
 # 1.Find the sum of two sparse polynomials using arrays
 # 2.Find the transpose of a sparse matrix and sum of two sparse matrices.
