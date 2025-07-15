@@ -2,7 +2,7 @@
 
 Welcome to the **Data Structures and Algorithms Lab Programs** repository for the **KTU 2024 Scheme**. This repository contains a comprehensive collection of all DSA lab programs implemented in accordance with the official syllabus.
 
-Each program is crafted to help students understand the core concepts of data structures and algorithms through hands-on implementation in C/C++.
+Each program is crafted to help students understand the core concepts of data structures and algorithms through hands-on implementation in C
 
 ---
 
