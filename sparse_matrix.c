@@ -7,6 +7,7 @@ struct tuple
     int val;
 };
 
+//Function to print the entered matrix in Tuple format
 void toTuple(int a[10][10],int r,int c,struct tuple t[])
 {
     int i,j,k=1;
@@ -22,7 +23,7 @@ void toTuple(int a[10][10],int r,int c,struct tuple t[])
                 t[k].val=a[i][j];
                 k++;
             }
-            t[0].row=r;
+            t[0].row=r; //The initial values are assigned as Metadata abuout the Matrix
             t[0].col=c;
             t[0].val=k-1;
         }
@@ -34,6 +35,7 @@ void toTuple(int a[10][10],int r,int c,struct tuple t[])
     }
 }
 
+//Print the transpose of the matrix in Tuple format in ascending order of Column number as row number
 void transpose(struct tuple t[],struct tuple tr[])
 {
     int r=t[0].row;
@@ -65,6 +67,8 @@ void transpose(struct tuple t[],struct tuple tr[])
     }
 }
 
+
+//Add the tuples 
 void addTuples(struct tuple t1[], struct tuple t2[], struct tuple s[]) {
     if (t1[0].row != t2[0].row || t1[0].col != t2[0].col) {
         printf("Matrix sizes do not match for addition!\n");
@@ -83,7 +87,8 @@ void addTuples(struct tuple t1[], struct tuple t2[], struct tuple s[]) {
             s[k].col = t1[i].col;
             s[k].val = t1[i].val + t2[j].val;
             i++; j++; k++;
-        } else if ((t1[i].row < t2[j].row) || (t1[i].row == t2[j].row && t1[i].col < t2[j].col)) 
+        } else if ((t1[i].row < t2[j].row) || (t1[i].row == t2[j].row && t1[i].col < t2[j].col)) /*If element in Tuple 1 isn't in Tuple
+                                                                                                    2 display it*/
         {
             s[k++] = t1[i++];
         } else {
@@ -91,8 +96,8 @@ void addTuples(struct tuple t1[], struct tuple t2[], struct tuple s[]) {
         }
     }
 
-    while (i <= t1[0].val) s[k++] = t1[i++];
-    while (j <= t2[0].val) s[k++] = t2[j++];
+    while (i <= t1[0].val) s[k++] = t1[i++]; //If Tuple 2 gets exhausted earlier print rest of Tuple 1
+    while (j <= t2[0].val) s[k++] = t2[j++]; //If Tuple 1 gets exhausted earlier print rest of Tuple 2
 
     s[0].val = k - 1;
 
@@ -156,6 +161,7 @@ int main()
 
     printf("\n------Matrix 1 in tuple format------\n");
     toTuple(a,r1,c1,t1);
+    
     printf("\n------Matrix 2 in tuple format------\n");
     toTuple(b,r2,c2,t2);
 
