@@ -178,27 +178,26 @@ int main()
         }
     }
 
-    postfix[p]='\0';
-    printf("Postfix expression:\n");
-    printf("%s\n",postfix);
+    postfix[p++] = '#';
+    postfix[p] = '\0';
 
-    for(i=0;i<p;i++)
+    i=0;
+    while(postfix[i] != '#')
     {
         if(isdigit(postfix[i]))
         {
             pushval(postfix[i]-'0');
         }
-        else if(postfix[i]=='+'||postfix[i]=='-'||postfix[i]=='*'||postfix[i]=='/'||postfix[i]=='^')
+        else
         {
             val2 = popval();
             val1 = popval();
-
             r = result(val1,val2,postfix[i]);
             pushval(r);
         }
+        i++;
     }
 
-    printf("%d\n",eval[0]);
-    
+    printf("Result: %d\n", popval());
     return 0;
 }
