@@ -1,9 +1,12 @@
 #include<stdio.h>
+#include<math.h>
+#include<ctype.h>
 #include<string.h>
 #define MAX 50
 
-int top=-1;
+int top=-1,topval=-1;
 char stack[MAX];
+int eval[MAX];
 
 void push(char c)
 {
@@ -28,6 +31,32 @@ char pop()
     else
     {
         return stack[top--];
+    }
+}
+
+void pushval(int n)
+{
+    if(topval>=MAX-1)
+    {
+        printf("Stack overflow!\n");
+        return;
+    }
+    else
+    {
+        eval[++topval]=n;
+    }
+}
+
+int popval()
+{
+    if(topval==-1)
+    {
+        printf("Stack underflow!\n");
+        return 0;
+    }
+    else
+    {
+        return eval[topval--];
     }
 }
 
@@ -83,10 +112,26 @@ int icp(char op)
     }
 }
 
+int result(int v1,int v2,int op)
+{
+    if(op=='+')
+        return v1+v2;
+    else if(op=='-')
+        return v1-v2;
+    else if(op=='*')
+        return (v1*v2);
+    else if(op=='/')
+        return(v1/v2);
+    else if(op=='^')
+        return(pow(v1,v2));
+    else
+        return 0;
+}
+
 int main()
 {
-    char str[MAX],el,x;
-    int l,i=0;
+    char str[MAX],el,x,postfix[MAX];
+    int l,i=0,val1,val2,p=0,r;
 
     printf("Enter your expression:");
     scanf("%s",str);
@@ -102,16 +147,16 @@ int main()
         el = str[i++];
         x=pop();
 
-        if (el != '+' && el != '-' && el != '*' && el != '/' && el != '^' && el != '(' && el != ')') 
+        if (isalnum(el)) 
         {
-            printf("%c\n",el);
+            postfix[p++]=el;
             push(x);
         }
         else if(el==')')
         {
             while(x!='(')
             {
-                printf("%c\n",x);
+                postfix[p++]=x;
                 x=pop();
             }
         }
@@ -119,7 +164,7 @@ int main()
         {
             while(isp(x)>=icp(el))
             {
-                printf("%c\n",x);
+                postfix[p++]=x;
                 x=pop();
             }
             push(x);
@@ -132,6 +177,28 @@ int main()
             push(el);
         }
     }
+
+    postfix[p]='\0';
+    printf("Postfix expression:\n");
+    printf("%s\n",postfix);
+
+    for(i=0;i<p;i++)
+    {
+        if(isdigit(postfix[i]))
+        {
+            pushval(postfix[i]-'0');
+        }
+        else if(postfix[i]=='+'||postfix[i]=='-'||postfix[i]=='*'||postfix[i]=='/'||postfix[i]=='^')
+        {
+            val2 = popval();
+            val1 = popval();
+
+            r = result(val1,val2,postfix[i]);
+            pushval(r);
+        }
+    }
+
+    printf("%d\n",eval[0]);
     
     return 0;
 }
