@@ -5,10 +5,10 @@
 #define MAX 50
 
 int top=-1,topval=-1;
-char stack[MAX];
-int eval[MAX];
+char stack[MAX];//Stack to convert to postfix
+int eval[MAX];//Stack for evaluating the  expression
 
-void push(char c)
+void push(char c)//Pop function for the conversion
 {
     if(top>=MAX-1)
     {
@@ -21,7 +21,7 @@ void push(char c)
     }
 }
 
-char pop()
+char pop()//Psuh function for the conversion
 {
     if(top==-1)
     {
@@ -34,7 +34,7 @@ char pop()
     }
 }
 
-void pushval(int n)
+void pushval(int n)//Push function for the evaluation
 {
     if(topval>=MAX-1)
     {
@@ -47,7 +47,7 @@ void pushval(int n)
     }
 }
 
-int popval()
+int popval()//Pop function for the evaluation
 {
     if(topval==-1)
     {
@@ -60,7 +60,7 @@ int popval()
     }
 }
 
-int isp(char op)
+int isp(char op)//In-stack precedence order of operators
 {
     if(op=='^')
     {
@@ -84,7 +84,7 @@ int isp(char op)
     }
 }
 
-int icp(char op)
+int icp(char op)//Precedence of incoming operators
 {
     if(op=='(')
     {
@@ -112,7 +112,7 @@ int icp(char op)
     }
 }
 
-int result(int v1,int v2,int op)
+int result(int v1,int v2,char op)//Function to perform the evaluaion
 {
     if(op=='+')
         return v1+v2;
@@ -140,8 +140,8 @@ int main()
     str[l]=')';
     str[l+1]='\0';
 
+    //Converts the expression to postfix
     push('(');
-    
     while(top>-1)
     {
         el = str[i++];
@@ -177,16 +177,15 @@ int main()
             push(el);
         }
     }
-
-    postfix[p++] = '#';
     postfix[p] = '\0';
-
+    printf("%s\n",postfix);//Prints the postfix expression
+    postfix[p++] = '#';//Set a delimiter
     i=0;
     while(postfix[i] != '#')
     {
         if(isdigit(postfix[i]))
         {
-            pushval(postfix[i]-'0');
+            pushval(postfix[i]-'0');//To find the numerical value of a charecter subtract ASCII value of charecter '0' from it
         }
         else
         {
@@ -198,6 +197,6 @@ int main()
         i++;
     }
 
-    printf("Result: %d\n", popval());
+    printf("Result: %d\n", popval());//Print the evaluated result
     return 0;
 }
