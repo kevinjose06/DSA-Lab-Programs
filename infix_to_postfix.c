@@ -1,3 +1,5 @@
+/*Using stack, convert an infix expression to a postfix expression and evaluate the postfix expression.*/
+
 #include<stdio.h>
 #include<math.h>
 #include<ctype.h>
