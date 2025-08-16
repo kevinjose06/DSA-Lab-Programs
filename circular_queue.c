@@ -10,7 +10,7 @@ int front = -1, rear = -1;
 int queue[MAX];
 
 //Function to add elements
-void enque(int n)
+void enqueue(int n)
 {
     if(front == (rear + 1) % MAX)
     {
@@ -32,7 +32,7 @@ void enque(int n)
 }
 
 //Delete element from the queue
-void deque()
+void dequeue()
 {
     if(front == -1 && rear == -1)
     {
@@ -92,12 +92,12 @@ int main()
             case 1:
             printf("Enter the number:");
             scanf("%d",&el);
-            enque(el);
+            enqueue(el);
             display();
             break;
 
             case 2:
-            deque();
+            dequeue();
             display();
             break;
 
