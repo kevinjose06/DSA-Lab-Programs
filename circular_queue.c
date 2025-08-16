@@ -105,10 +105,14 @@ int main()
             display();
             break;
 
+            case 4:
+            break;
+
             default:
             printf("Invalid input!");
             break;
         }
+        break;
     }
     return 0;
 }
