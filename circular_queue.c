@@ -112,7 +112,10 @@ int main()
             printf("Invalid input!");
             break;
         }
-        break;
+        if(op == 4)
+        {
+            break;
+        }
     }
     return 0;
 }
