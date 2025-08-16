@@ -10,7 +10,7 @@ int front = -1, rear = -1;
 int queue[MAX];
 
 //Function to add elements to the queue
-void enque(int n) 
+void enqueue(int n) 
 {
     if(rear >= MAX-1) 
     {
@@ -25,7 +25,7 @@ void enque(int n)
 }
 
 //Function to remove elements from the queue
-int deque() {
+int dequeue() {
     if(front == -1) 
     {
         printf("Queue is empty!\n");
@@ -71,12 +71,12 @@ int main()
             case 1:
                 printf("Enter value: ");
                 scanf("%d", &val);
-                enque(val);
+                enqueue(val);
                 display();
                 break;
                 
             case 2:
-                val = deque();
+                val = dequeue();
                 if(val != -1) {
                     printf("Removed: %d\n", val);
                 }
