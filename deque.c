@@ -146,7 +146,7 @@ int main()
 
     for(i=0;i<n;i++)
     {
-        printf("Enter your choice:\n1) Add at rear\n2) Add at front\n3) Display\n4) Delete at front\n5) Delete at rear\n");
+        printf("Enter your choice:\n1) Add at rear\n2) Add at front\n3) Display\n4) Delete at front\n5) Delete at rear\n6)Exit\n");
         scanf("%d",&op);
         switch(op)
         {
@@ -178,10 +178,14 @@ int main()
             display();
             break;
 
+            case 6:
+            break;
+
             default:
             printf("Invalid input!");
             break;
         }
+        break;
     }
     return 0;
 }
