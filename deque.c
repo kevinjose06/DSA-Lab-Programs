@@ -185,7 +185,10 @@ int main()
             printf("Invalid input!");
             break;
         }
-        break;
+        if(op == 6)
+        {
+            break;
+        }
     }
     return 0;
 }
