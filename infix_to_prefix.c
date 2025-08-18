@@ -1,3 +1,5 @@
+/*Write a program to convert an infix expression to a prefix expression using stack.*/
+
 #include <stdio.h>
 #include <math.h>
 #include <ctype.h>
