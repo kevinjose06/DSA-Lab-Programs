@@ -2,115 +2,210 @@
 two polynomials and display the first polynomial, second polynomial and the resultant polynomial.*/
 
 #include <stdio.h>
+#include <stdlib.h>
 
-// Structure to represent a term in the polynomial
-struct Term 
+struct node 
 {
-    int coeff;
+    int coef;
     int exp;
+    struct node* link;
 };
 
-void displayPolynomial(struct Term poly[], int n); //Function prototype
-
-// Function to add two polynomials
-void addPolynomials(struct Term poly1[], int n1, struct Term poly2[], int n2, struct Term result[]) 
+// ------------------ GETNODE ------------------
+struct node* getnode(struct node* h) 
 {
-    int i = 0, j = 0, k = 0;
+    struct node* n;
+    struct node* ptr = h;
 
-    while (i < n1 && j < n2) 
+    n = (struct node*)malloc(sizeof(struct node));
+
+    if (n == NULL) 
     {
-        if (poly1[i].exp == poly2[j].exp) 
+        printf("Couldn't add node!\n");
+        return 0;
+    } else
+    {
+        while (ptr->link != NULL) 
         {
-            result[k].coeff = poly1[i].coeff + poly2[j].coeff;
-            result[k].exp = poly1[i].exp;
-            i++;
-            j++;
-            k++;
-        } else if (poly1[i].exp > poly2[j].exp) 
-        {
-            result[k].coeff = poly1[i].coeff;
-            result[k].exp = poly1[i].exp;
-            i++;
-            k++;
-        } else 
-        {
-            result[k].coeff = poly2[j].coeff;
-            result[k].exp = poly2[j].exp;
-            j++;
-            k++;
+            ptr = ptr->link;
         }
+        ptr->link = n;
+        n->link = NULL;
     }
-
-    while(i<n1)
-    {
-        result[k].coeff = poly1[i].coeff;
-        result[k].exp = poly1[i].exp;
-        i++;
-        k++;
-    }
-
-    while(j<n2)
-    {
-        result[k].coeff = poly2[j].coeff;
-        result[k].exp = poly2[j].exp;
-        j++;
-        k++;
-    }
-
-    displayPolynomial(result,k); //The display function to print the result
+    return n;
 }
 
-// Function to display a polynomial
-void displayPolynomial(struct Term poly[], int n) 
+// ------------------ DISPLAY ------------------
+void display(struct node* h) 
 {
-    for (int i = 0; i < n; i++) {
-        printf("%dx^%d", poly[i].coeff, poly[i].exp);
-        if (i != n - 1) 
-        {
+    struct node* ptr = h;
+
+    if (ptr == NULL || ptr->link == NULL) 
+    {
+        printf("Empty polynomial!\n");
+        return;
+    }
+
+    ptr = ptr->link;
+    while (ptr != NULL) 
+    {
+        printf("%dx^%d", ptr->coef, ptr->exp);
+        if (ptr->link != NULL)
             printf(" + ");
-        }
+        ptr = ptr->link;
     }
     printf("\n");
 }
 
-// Main function
-int main() {
-    struct Term poly1[100], poly2[100], result[100];
-    int n1, n2, n3;
+// ------------------ COMBINE LIKE TERMS ------------------
+void combineLikeTerms(struct node* h) 
+{
+    struct node* ptr = h->link;   
+    struct node* ptr1, *prev, *temp;
 
-    // Read first polynomial
-    printf("Enter the number of terms in the first polynomial: ");
-    scanf("%d", &n1);
-    printf("Enter polynomial 1:\n");
-    for (int i = 0; i < n1; i++) 
+    while (ptr != NULL) 
     {
-        printf("Enter coefficient of term %d: ",i+1);
-        scanf("%d", &poly1[i].coeff);
-        printf("Enter exponent of term %d: ",i+1);
-        scanf("%d", &poly1[i].exp);
+        prev = ptr;
+        ptr1 = ptr->link;        
+
+        while (ptr1 != NULL) 
+        {
+            if (ptr->exp == ptr1->exp) 
+            {
+                ptr->coef += ptr1->coef;
+
+                prev->link = ptr1->link;
+                temp = ptr1;
+                ptr1 = ptr1->link;
+                free(temp);
+            } 
+            else 
+            {
+                prev = ptr1;
+                ptr1 = ptr1->link;
+            }
+        }   
+        ptr = ptr->link;
+    }
+}
+
+// ------------------ POLYNOMIAL CREATION ------------------
+void create(struct node* h) 
+{
+    int n, coef, exp, i;
+    printf("Enter number of terms: ");
+    scanf("%d", &n);
+
+    for (i = 0; i < n; i++) {
+        printf("Enter coefficient and exponent for term %d: ", i + 1);
+        scanf("%d%d", &coef, &exp);
+        struct node* newnode = getnode(h);
+        newnode->coef = coef;
+        newnode->exp = exp;
+    }
+}
+
+// ------------------ ADDITION ------------------
+void addition(struct node* h1, struct node* h2, struct node* h3) 
+{
+    struct node* ptr1 = h1->link;
+    struct node* ptr2 = h2->link;
+    struct node* ptr3;
+
+    while (ptr1 != NULL && ptr2 != NULL) 
+    {
+        ptr3 = getnode(h3);
+
+        if (ptr1->exp > ptr2->exp) 
+        {
+            ptr3->coef = ptr1->coef;
+            ptr3->exp = ptr1->exp;
+            ptr1 = ptr1->link;
+        } 
+        else if (ptr1->exp < ptr2->exp) 
+        {
+            ptr3->coef = ptr2->coef;
+            ptr3->exp = ptr2->exp;
+            ptr2 = ptr2->link;
+        } 
+        else 
+        {
+            ptr3->coef = ptr1->coef + ptr2->coef;
+            ptr3->exp = ptr1->exp;
+            ptr1 = ptr1->link;
+            ptr2 = ptr2->link;
+        }
     }
 
-    // Read second polynomial
-    printf("Enter the number of terms in the second polynomial: ");
-    scanf("%d", &n2);
-    printf("Enter polynomial 2:\n");
-    for (int i = 0; i < n2; i++) 
+    while (ptr1 != NULL) 
     {
-        printf("Enter coefficient of term %d: ",i+1);
-        scanf("%d", &poly2[i].coeff);
-        printf("Enter exponent of term %d: ",i+1);
-        scanf("%d", &poly2[i].exp);
+        ptr3 = getnode(h3);
+        ptr3->coef = ptr1->coef;
+        ptr3->exp = ptr1->exp;
+        ptr1 = ptr1->link;
     }
 
-    // Display all polynomials
-    printf("\nFirst Polynomial: ");
-    displayPolynomial(poly1, n1);
+    while (ptr2 != NULL) 
+    {
+        ptr3 = getnode(h3);
+        ptr3->coef = ptr2->coef;
+        ptr3->exp = ptr2->exp;
+        ptr2 = ptr2->link;
+    }
+}
 
-    printf("Second Polynomial: ");
-    displayPolynomial(poly2, n2);
+// ------------------ MULTIPLICATION ------------------
+void product(struct node* h1, struct node* h2, struct node* h4) 
+{
+    struct node* ptr1 = h1->link;
+    struct node* ptr2;
+    struct node* ptr4;
 
-    // Add polynomials
-    addPolynomials(poly1, n1, poly2, n2, result);
+    while (ptr1 != NULL) 
+    {
+        ptr2 = h2->link;
+        while (ptr2 != NULL) 
+        {
+            ptr4 = getnode(h4);
+            ptr4->coef = ptr1->coef * ptr2->coef;
+            ptr4->exp = ptr1->exp + ptr2->exp;
+            ptr2 = ptr2->link;
+        }
+        ptr1 = ptr1->link;
+    }
+
+    combineLikeTerms(h4);
+}
+
+int main() 
+{
+    struct node* h1 = (struct node*)malloc(sizeof(struct node));
+    struct node* h2 = (struct node*)malloc(sizeof(struct node));
+    struct node* h3 = (struct node*)malloc(sizeof(struct node));
+    struct node* h4 = (struct node*)malloc(sizeof(struct node));
+
+    h1->link = NULL;
+    h2->link = NULL;
+    h3->link = NULL;
+    h4->link = NULL;
+
+    printf("Enter Polynomial 1:\n");
+    create(h1);
+    printf("Enter Polynomial 2:\n");
+    create(h2);
+
+    printf("\nPolynomial 1: ");
+    display(h1);
+    printf("Polynomial 2: ");
+    display(h2);
+
+    addition(h1, h2, h3);
+    printf("\nAddition Result: ");
+    display(h3);
+
+    product(h1, h2, h4);
+    printf("Multiplication Result: ");
+    display(h4);
 
     return 0;
 }
