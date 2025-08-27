@@ -15,8 +15,26 @@ struct node
 struct node* head = NULL;
 struct node* current = NULL;
 
-// Function to create and attach new node at the end
-void addnode(char str[]) 
+//Function to delete a node
+void deleteAfter(struct node* current) 
+{
+    struct node* temp = current->next;
+    struct node* nextNode;
+
+    while (temp != NULL) 
+    {
+        nextNode = temp->next;  // save next
+        free(temp);             // free current
+        temp = nextNode;        // move forward
+    }
+
+    current->next = NULL;  // cut off the chain
+}
+
+
+/*Function to create and attach new node at the end.Also if we are trying to add a new node at any node axcept the last node,
+we have to delete all the nodes after that node(coz that's how a browser's navigation button works).*/
+void addnode(char str[], struct node* c) 
 {
     struct node* newnode = (struct node*)malloc(sizeof(struct node));
     if (newnode == NULL) 
@@ -24,26 +42,31 @@ void addnode(char str[])
         printf("Memory not allocated!\n");
         return;
     }
+
     strcpy(newnode->data, str);
     newnode->prev = NULL;
     newnode->next = NULL;
 
     if (head == NULL) 
     {
+        // Empty list
         head = newnode;
         current = newnode;
     } 
     else 
     {
-        struct node* ptr = head;
-        while (ptr->next != NULL) 
+        // If there are forward nodes, delete them
+        if (c->next != NULL) 
         {
-            ptr = ptr->next;
+            deleteAfter(c);
         }
-        ptr->next = newnode;
-        newnode->prev = ptr;
-        current = newnode;   // move to new page
+
+        // Insert after current
+        c->next = newnode;
+        newnode->prev = c;
+        current = newnode;
     }
+
     printf("Visited: %s\n", current->data);
 }
 
@@ -93,12 +116,8 @@ int main()
     int ch;
     char str[100];
 
-    // preload 3 pages
-    addnode("Hello there");
-    addnode("Enter your website");
-    addnode("Thank you, visit again");
-
-    while (1) {
+    while (1) 
+    {
         printf("\n1. Visit new page\n");
         printf("2. Back\n");
         printf("3. Forward\n");
@@ -108,12 +127,13 @@ int main()
         scanf("%d", &ch);
         getchar();
 
-        switch (ch) {
+        switch (ch) 
+        {
             case 1:
                 printf("Enter page name: ");
                 fgets(str, sizeof(str), stdin);
                 str[strcspn(str, "\n")] = '\0';
-                addnode(str);
+                addnode(str,current);
                 break;
             case 2:
                 back();
