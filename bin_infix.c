@@ -4,13 +4,15 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-struct Node {
+struct Node 
+{
     char data;
     struct Node* left;
     struct Node* right;
 };
 
-struct Node* newNode(char c) {
+struct Node* newNode(char c) 
+{
     struct Node* node = (struct Node*)malloc(sizeof(struct Node));
     node->data = c;
     node->left = node->right = NULL;
@@ -102,7 +104,7 @@ int main() {
 
     printf("Enter the expression : ");
     scanf("%s",expr);
-    
+
     struct Node* root = buildTree(expr);
 
     printf("Prefix: ");
