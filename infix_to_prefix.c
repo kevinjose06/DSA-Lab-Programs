@@ -10,7 +10,8 @@ int top = -1, topval = -1;
 char stack[MAX];   // Stack to convert to prefix
 int eval[MAX];     // Stack for evaluating prefix
 
-void push(char c) {
+void push(char c) 
+{
     if (top >= MAX - 1)
         printf("Stack overflow!\n");
     else
