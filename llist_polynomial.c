@@ -126,7 +126,9 @@ struct node* product(struct node* h1, struct node* h2) {
 }
 
 int main() {
+    printf("Enter polynomial 1:\n");
     struct node* h1 = create();
+    printf("Enter polynomial 2:\n");
     struct node* h2 = create();
 
     printf("\nPolynomial 1: ");
