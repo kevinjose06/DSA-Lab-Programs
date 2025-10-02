@@ -31,7 +31,7 @@ void prefix(struct node* r)
         }
 }
 
-void tree(struct node **r)
+struct node* tree(struct node* r)
 {
         char val;
 
@@ -40,27 +40,26 @@ void tree(struct node **r)
         getchar();
         if(val =='$')
         {
-                r == NULL;
-                return;
+                return NULL;
         }
 
-        struct node* n = (struct node*)malloc(sizeof(struct node));
-        n->data = val;
-        n->lchild = NULL;
-        n->rchild = NULL;
-        *r = n;
+        r = (struct node*)malloc(sizeof(struct node));
+        r->data = val;
+        r->lchild = NULL;
+        r->rchild = NULL;
         printf("Enter the value of left child of %c: ",val);
-        tree(&((*r)->lchild));
+        tree(r->lchild);
         printf("\n");
         printf("Enter the value of right child of %c: ",val);
-        tree(&((*r)->rchild));
+        tree(r->rchild);
+        return r;
 }
 
 int main()
 {
-        struct node  *root = NULL;
+        struct node* root = NULL;
 
-        tree(&root);
+        root = tree(root);
         postfix(root);
         printf("\n");
         prefix(root);
