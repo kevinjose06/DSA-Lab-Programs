@@ -1,153 +1,136 @@
-/*Write a program to convert an infix expression to a prefix expression using stack.*/
-
-#include <stdio.h>
-#include <math.h>
-#include <ctype.h>
-#include <string.h>
+#include<stdio.h>
+#include<math.h>
+#include<ctype.h>
+#include<string.h>
 #define MAX 50
 
-int top = -1, topval = -1;
-char stack[MAX];   // Stack to convert to prefix
-int eval[MAX];     // Stack for evaluating prefix
+int top=-1, topval=-1;
+char stack[MAX];    // Operator stack for conversion
+int eval[MAX];      // Stack for evaluation (prefix)
 
-void push(char c) 
-{
-    if (top >= MAX - 1)
-        printf("Stack overflow!\n");
-    else
-        stack[++top] = c;
+void push(char c) { if(top<MAX-1) stack[++top]=c; else printf("Stack overflow!\n"); }
+char pop() { return (top==-1) ? '\0' : stack[top--]; }
+char peek() { return (top==-1) ? '\0' : stack[top]; }
+
+void pushval(int n) { if(topval<MAX-1) eval[++topval]=n; else printf("Stack overflow!\n"); }
+int popval() { return (topval==-1) ? 0 : eval[topval--]; }
+
+// In-stack precedence
+int isp(char op){
+    if(op=='^') return 5;
+    if(op=='*'||op=='/') return 4;
+    if(op=='+'||op=='-') return 2;
+    if(op=='(') return 0;
+    return -1;
 }
 
-char pop() {
-    if (top == -1) {
-        printf("Stack underflow!\n");
-        return '\0';
-    } else
-        return stack[top--];
+// Incoming precedence
+int icp(char op){
+    if(op=='(') return 7;
+    if(op=='^') return 6;
+    if(op=='*'||op=='/') return 3;
+    if(op=='+'||op=='-') return 1;
+    if(op==')') return 0;
+    return -1;
 }
 
-void pushval(int n) {
-    if (topval >= MAX - 1)
-        printf("Stack overflow!\n");
-    else
-        eval[++topval] = n;
+// Evaluate a single operation
+int result(int v1,int v2,char op){
+    switch(op){
+        case '+': return v1+v2;
+        case '-': return v1-v2;
+        case '*': return v1*v2;
+        case '/': return v1/v2;
+        case '^': return pow(v1,v2);
+        default: return 0;
+    }
 }
 
-int popval() {
-    if (topval == -1) {
-        printf("Stack underflow!\n");
-        return 0;
-    } else
-        return eval[topval--];
-}
-
-int isp(char op) {
-    if (op == '^')
-        return 5;
-    else if (op == '*' || op == '/')
-        return 4;
-    else if (op == '+' || op == '-')
-        return 2;
-    else if (op == ')') // when scanning right-to-left, ) acts like (
-        return 0;
-    else
-        return -1;
-}
-
-int icp(char op) {
-    if (op == ')')
-        return 7;  // high precedence to push onto stack
-    else if (op == '^')
-        return 6;
-    else if (op == '*' || op == '/')
-        return 3;
-    else if (op == '+' || op == '-')
-        return 1;
-    else if (op == '(') // when scanning right-to-left, ( acts like )
-        return 0;
-    else
-        return -1;
-}
-
-int result(int v1, int v2, char op) {
-    if (op == '+')
-        return v1 + v2;
-    else if (op == '-')
-        return v1 - v2;
-    else if (op == '*')
-        return v1 * v2;
-    else if (op == '/')
-        return v1 / v2;
-    else if (op == '^')
-        return pow(v1, v2);
-    else
-        return 0;
-}
-
-int main() {
-    char str[MAX], el, x, prefix[MAX];
-    int l, i, val1, val2, p = 0, r;
+int main(){
+    char str[MAX], el, x, prefix[MAX][MAX];
+    int i=0, p=0, topPre=-1;
+    char temp[MAX], op1[MAX], op2[MAX];
 
     printf("Enter your expression: ");
     scanf("%s", str);
 
-    l = strlen(str);
+    int l = strlen(str);
+    str[l] = ')'; str[l+1] = '\0';
+    push('(');  // Initial '('
 
-    // Start with ')' on stack for right-to-left scan
-    push(')');
-
-    // Scan from right to left
-    i = l - 1;
-    while (top > -1) {
-        el = (i >= 0) ? str[i--] : '\0';
+    // Convert infix to prefix using stack
+    while(top>-1){
+        el = str[i++];
         x = pop();
 
-        if (isalnum(el)) { // operand
-            prefix[p++] = el;
+        if(isalnum(el)){  // Operand
+            strcpy(prefix[++topPre], (char[]){el,'\0'});
             push(x);
         }
-        else if (el == '(') { // acts like ')' in normal L->R
-            while (x != ')') {
-                prefix[p++] = x;
-                x = pop();
+        else if(el==')'){ // Pop until '('
+            while(x!='('){
+                popval(); // unused, just mimic postfix style
+                push(x);  // restore?
+                x = pop(); 
             }
         }
-        else if (isp(x) > icp(el)) {
-            while (isp(x) > icp(el)) {
-                prefix[p++] = x;
+        else if(isp(x)>=icp(el)){
+            while(isp(x)>=icp(el)){
+                // Pop two prefix strings
+                if(topPre<1){ push(x); break; }
+                strcpy(op2, prefix[topPre--]);
+                strcpy(op1, prefix[topPre--]);
+                sprintf(temp, "%c%s%s", x, op1, op2);
+                strcpy(prefix[++topPre], temp);
                 x = pop();
             }
             push(x);
             push(el);
         }
-        else {
+        else{
             push(x);
-            if (el != '\0') push(el);
+            push(el);
         }
     }
 
-    // Reverse prefix array to get correct order
-    for (i = 0; i < p / 2; i++) {
-        char temp = prefix[i];
-        prefix[i] = prefix[p - i - 1];
-        prefix[p - i - 1] = temp;
+    // Process remaining operators
+    while(top>-1){
+        x = pop();
+        if(x=='(') break;
+        strcpy(op2, prefix[topPre--]);
+        strcpy(op1, prefix[topPre--]);
+        sprintf(temp, "%c%s%s", x, op1, op2);
+        strcpy(prefix[++topPre], temp);
     }
-    prefix[p] = '\0';
 
-    printf("Prefix expression: %s\n", prefix);
+    printf("Prefix Expression: %s\n", prefix[topPre]);
 
-    // Evaluate prefix expression
-    for (i = p - 1; i >= 0; i--) {
-        if (isdigit(prefix[i])) {
-            pushval(prefix[i] - '0');
-        } else {
-            val1 = popval();
-            val2 = popval();
-            r = result(val1, val2, prefix[i]);
-            pushval(r);
+    // Evaluate prefix if numeric
+    int numeric = 1;
+    for(i=0; prefix[topPre][i]; i++){
+        if(isalpha(prefix[topPre][i])){
+            numeric = 0;
+            break;
         }
     }
 
-    printf("Result: %d\n", popval());
+    if(numeric){
+        // Evaluate prefix expression
+        char *exp = prefix[topPre];
+        int stackVal[MAX], topE=-1, op1v, op2v, res;
+        for(i=strlen(exp)-1; i>=0; i--){
+            if(isdigit(exp[i]))
+                stackVal[++topE] = exp[i]-'0';
+            else{
+                op1v = stackVal[topE--];
+                op2v = stackVal[topE--];
+                stackVal[++topE] = result(op1v, op2v, exp[i]);
+            }
+        }
+        printf("Evaluated Result: %d\n", stackVal[topE]);
+    } else {
+        printf("Contains variables — skipping evaluation.\n");
+    }
+
     return 0;
 }
