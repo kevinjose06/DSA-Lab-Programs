@@ -152,7 +152,8 @@ int evaluatePrefix(char prefix[]) {
     return popval();
 }
 
-int main() {
+int main() 
+{
     char expr[MAX], prefix[MAX];
     printf("Enter infix expression: ");
     scanf("%s", expr);
