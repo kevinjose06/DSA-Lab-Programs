@@ -1,204 +1,167 @@
 /*Using stack, convert an infix expression to a postfix expression and evaluate the postfix expression.*/
 
-#include<stdio.h>
-#include<math.h>
-#include<ctype.h>
-#include<string.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <math.h>
 #define MAX 50
 
-int top=-1,topval=-1;
-char stack[MAX];//Stack to convert to postfix
-int eval[MAX];//Stack for evaluating the  expression
+char stack[MAX];
+int eval[MAX];
+int top = -1, topval = -1;
 
-void push(char c)//Pop function for the conversion
-{
-    if(top>=MAX-1)
-    {
-        printf("Stack overflow!\n");
-        return;
-    }
+void push(char c) {
+    if (top == MAX - 1)
+        printf("Stack Overflow\n");
     else
-    {
-        stack[++top]=c;
-    }
+        stack[++top] = c;
 }
 
-char pop()//Psuh function for the conversion
-{
-    if(top==-1)
-    {
-        printf("Stack underflow!\n");
+char pop() {
+    if (top == -1)
         return '\0';
-    }
     else
-    {
         return stack[top--];
-    }
 }
 
-void pushval(int n)//Push function for the evaluation
-{
-    if(topval>=MAX-1)
-    {
-        printf("Stack overflow!\n");
-        return;
-    }
+void pushval(int n) {
+    if (topval == MAX - 1)
+        printf("Value Stack Overflow\n");
     else
-    {
-        eval[++topval]=n;
-    }
+        eval[++topval] = n;
 }
 
-int popval()//Pop function for the evaluation
-{
-    if(topval==-1)
-    {
-        printf("Stack underflow!\n");
-        return 0;
-    }
+int popval() {
+    if (topval == -1)
+        printf("Value Stack Underflow\n");
     else
-    {
         return eval[topval--];
+    return 0;
+}
+
+int isp(char op) {
+    switch (op) {
+        case '+': case '-': return 2;
+        case '*': case '/': return 4;
+        case '^': return 5;
+        case '(': return 0;
+        default: return -1;
     }
 }
 
-int isp(char op)//In-stack precedence order of operators
-{
-    if(op=='^')
-    {
-        return 5;
-    }
-    else if(op=='*'||op=='/')
-    {
-        return 4;
-    }
-    else if(op=='+'||op=='-')
-    {
-        return 2;
-    }
-    else if(op=='(')
-    {
-        return 0;
-    }
-    else
-    {
-        return -1;
+int icp(char op) {
+    switch (op) {
+        case '+': case '-': return 1;
+        case '*': case '/': return 3;
+        case '^': return 6;
+        case '(': return 7;
+        case ')': return 0;
+        default: return -1;
     }
 }
 
-int icp(char op)//Precedence of incoming operators
-{
-    if(op=='(')
-    {
-        return 7;
-    }
-    else if(op=='^')
-    {
-        return 6;
-    }
-    else if(op=='*'||op=='/')
-    {
-        return 3;
-    }
-    else if(op=='+'||op=='-')
-    {
-        return 1;
-    }
-    else if(op==')')
-    {
-        return 0;
-    }
-    else
-    {
-        return -1;
+void reverse(char *exp) {
+    int i, j;
+    char temp;
+    for (i = 0, j = strlen(exp) - 1; i < j; i++, j--) {
+        temp = exp[i];
+        exp[i] = exp[j];
+        exp[j] = temp;
     }
 }
 
-int result(int v1,int v2,char op)//Function to perform the evaluaion
-{
-    if(op=='+')
-        return v1+v2;
-    else if(op=='-')
-        return v1-v2;
-    else if(op=='*')
-        return (v1*v2);
-    else if(op=='/')
-        return(v1/v2);
-    else if(op=='^')
-        return(pow(v1,v2));
-    else
-        return 0;
+int iresult(int v1, int v2, char op) {
+    switch (op) {
+        case '+': return v1 + v2;
+        case '-': return v1 - v2;
+        case '*': return v1 * v2;
+        case '/': return v1 / v2;
+        case '^': return pow(v1, v2);
+        default: return 0;
+    }
 }
 
-int main()
-{
-    char str[MAX],el,x,postfix[MAX];
-    int l,i=0,val1,val2,p=0,r;
+void infixToPrefix(char E[], char prefix[]) {
+    char item, x;
+    int i = 0, k = 0;
 
-    printf("Enter your expression:");
-    scanf("%s",str);
+    reverse(E); // Step 1: Reverse infix
 
-    l=strlen(str);
-    str[l]=')';
-    str[l+1]='\0';
+    // Step 2: Swap '(' and ')'
+    for (i = 0; E[i] != '\0'; i++) {
+        if (E[i] == '(')
+            E[i] = ')';
+        else if (E[i] == ')')
+            E[i] = '(';
+    }
 
-    //Converts the expression to postfix
+    strcat(E, ")");  // Append closing bracket
     push('(');
-    while(top>-1)
-    {
-        el = str[i++];
-        x=pop();
+    i = 0;
 
-        if (isalnum(el)) 
-        {
-            postfix[p++]=el;
-            push(x);
+    while (top > -1) {
+        item = E[i++];
+
+        if (item == '\0') break;
+
+        if (isalnum(item)) {
+            prefix[k++] = item;
         }
-        else if(el==')')
-        {
-            while(x!='(')
-            {
-                postfix[p++]=x;
-                x=pop();
+        else if (item == ')') {
+            x = pop();
+            while (x != '(') {
+                prefix[k++] = x;
+                x = pop();
             }
         }
-        else if(isp(x)>=icp(el))
-        {
-            while(isp(x)>=icp(el))
-            {
-                postfix[p++]=x;
-                x=pop();
+        else {
+            x = pop();
+            if (isp(x) >= icp(item)) {
+                while (isp(x) >= icp(item)) {
+                    prefix[k++] = x;
+                    x = pop();
+                }
+                push(x);
+                push(item);
+            } else {
+                push(x);
+                push(item);
             }
-            push(x);
-            push(el);
-
-        }
-        else if(isp(x)<icp(el))
-        {
-            push(x);
-            push(el);
         }
     }
-    postfix[p] = '\0';
-    printf("%s\n",postfix);//Prints the postfix expression
-    postfix[p++] = '#';//Set a delimiter
-    i=0;
-    while(postfix[i] != '#')
-    {
-        if(isdigit(postfix[i]))
-        {
-            pushval(postfix[i]-'0');//To find the numerical value of a charecter subtract ASCII value of charecter '0' from it
-        }
-        else
-        {
-            val2 = popval();
-            val1 = popval();
-            r = result(val1,val2,postfix[i]);
+
+    prefix[k] = '\0';
+    reverse(prefix); // Final prefix
+}
+
+int evaluatePrefix(char prefix[]) {
+    int i, n1, n2, r;
+    int len = strlen(prefix);
+
+    // Evaluate from right to left
+    for (i = len - 1; i >= 0; i--) {
+        if (isalnum(prefix[i])) {
+            pushval(prefix[i] - '0');
+        } else {
+            n1 = popval();
+            n2 = popval();
+            r = result(n1, n2, prefix[i]);
             pushval(r);
         }
-        i++;
     }
+    return popval();
+}
 
-    printf("Result: %d\n", popval());//Print the evaluated result
+int main() {
+    char expr[MAX], prefix[MAX];
+    printf("Enter infix expression: ");
+    scanf("%s", expr);
+
+    infixToPrefix(expr, prefix);
+    printf("Prefix Expression: %s\n", prefix);
+
+    int ans = evaluatePrefix(prefix);
+    printf("Evaluated Result: %d\n", ans);
+
     return 0;
 }
