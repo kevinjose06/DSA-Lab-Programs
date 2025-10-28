@@ -58,7 +58,6 @@ struct node* tree(struct node* r)
 int main()
 {
         struct node* root = NULL;
-
         root = tree(root);
         postfix(root);
         printf("\n");
